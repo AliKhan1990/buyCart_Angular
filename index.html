@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BuyCart</title>
+    <link rel="stylesheet" href="css/bootstrap_css/bootstrap.min.css">
+    <script src="Angular/angular-1.5.5/angular.min.js"></script>
+    <script>
+        var items = [
+            {
+                name: "Need For Speed",
+                price: 100,
+            },
+            {
+                name: "David Bowie",
+                price: 160
+            },
+            {
+                name: "Slash",
+                price: 120
+            },
+            {
+                name: "Big Door",
+                price: 580
+            }, {
+                name: "Adultchild",
+                price: 80
+            }
+        ];
+        var buyCarts = [
+            {
+                product: items[0],
+                numbers: 5
+            },
+            {
+                product: items[1],
+                numbers: 3
+            },
+            {
+                product: items[3],
+                numbers: 3
+            }
+        ];
+
+        var buyCartApp = angular.module("buyCartApp", []);
+        buyCartApp.controller("buyCartCtrl", function ($scope) {
+            $scope.buyCarts = buyCarts;
+            $scope.items = items;
+            $scope.buyNum = 1;
+            //声明购物车函数
+            $scope.shopCart = {
+                //添加商品函数
+                add: function (product, num) {
+                    var flag = false;
+                    for (var index = 0; index < $scope.buyCarts.length; index++) {
+                        if ($scope.buyCarts[index].product.name == product.name) {
+                            flag = true;
+                            $scope.buyCarts[index].numbers += num;
+                            break;//结束整个循环体
+                        }
+                    }
+                    if(!flag){
+                        alert(num)
+                        var item = {product:product, numbers:num}; // 构造一个item项
+                        $scope.buyCarts.push(item);        // 将该item放入购物车
+                    }
+                },
+
+                update: function (product, num) {
+                    for (var index = 0; index < buyCarts.length; index++) {
+                        if (buyCarts[index].product.name == product.name) {
+                            buyCarts[index].numbers = num;
+                            break;//结束整个循环体
+                        }
+                    }
+                },
+
+                remove: function (product, i) {
+                    for (var index = 0; index < $scope.buyCarts.length; index++) {
+                        if ($scope.buyCarts[index].product.$index == i) {
+                            $scope.buyCarts.splice(index, 1);
+                            break;//结束整个循环体
+                        }
+                    }
+                },
+                showAll: function () {
+                    return buyCarts;
+                },
+
+                clearBothCart: function () {
+                    $scope.buyCarts.length = 0;
+                },
+
+                countBuy: function () {
+                    var contB = 0;
+                    angular.forEach($scope.buyCarts, function (it) {
+                        contB += it.product.price * it.numbers;
+                    });
+                    return contB;
+                }
+            }
+        });
+
+
+    </script>
+</head>
+<body ng-app="buyCartApp" ng-controller="buyCartCtrl">
+<div class="container">
+    <div class="page-header">
+        <h3>货架</h3>
+    </div>
+    <table class="table table-striped">
+        <tr>
+            <th>序号</th>
+            <th>名称</th>
+            <th>单价</th>
+            <th>数量</th>
+            <th>小计</th>
+            <th>操作</th>
+        </tr>
+        <tr ng-repeat="cd in items">
+            <td>{{$index+1}}</td>
+            <td>{{cd.name}}</td>
+            <td>{{cd.price}}</td>
+            <td><input type="number" value="1" ng-model="buyNum"></td>
+            <td>{{cd.price * buyNum | currency:"￥"}}</td>
+            <td><a class="btn btn-warning btn-sm pull-right" href="#" ng-click="shopCart.add(cd,buyNum)">添加购物车</a></td>
+        </tr>
+    </table>
+    <div class="page-header">
+        <h3>购物车</h3>
+    </div>
+    <input type="button" class="btn btn-warning" style="float:right;" ng-click="shopCart.clearBothCart()" value="清空购物车">
+    <table class="table table-striped">
+        <tr>
+            <th>序号</th>
+            <th>名称</th>
+            <th>单价</th>
+            <th>数量</th>
+            <th>小计</th>
+            <th>操作</th>
+        </tr>
+        <tr ng-repeat="item in buyCarts">
+            <td>{{$index+1}}</td>
+            <td>{{item.product.name}}</td>
+            <td>{{item.product.price}}</td>
+            <td><input type="button" value="+" ng-click="item.numbers=item.numbers+1">
+                <input type="number"
+                       value="{{item.numbers}}"
+                       class="" ng-model="item.numbers"><input type="button" ng-click="item.numbers=item.numbers-1"
+                                                               value="-"></td>
+            <td>{{item.product.price*item.numbers | currency:"￥"}}</td>
+            <td><a ng-click="shopCart.remove(item,item.product.$index)" class="btn btn-success btn-sm pull-right"
+                   href="#">删除</a></td>
+        </tr>
+    </table>
+    <div>总金额：<span class="btn btn-info">{{shopCart.countBuy() | currency:"￥"}}</span></div>
+</div>
+</body>
+</html>
